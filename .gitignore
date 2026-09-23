@@ -1,0 +1,20 @@
+# VirtualBox / VM artifacts — never commit VM disks, saved states, or logs
+*.vdi
+*.vmdk
+*.vbox
+*.vbox-prev
+*.sav
+*.ova
+*.ovf
+*.iso
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor / temp
+*.swp
+*~
+*.log
+tmp/
