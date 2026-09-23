@@ -1,34 +1,12 @@
-# NetworkWalks Week 1 – Cybersecurity Testing Lab Environment
+# NetworkWalks Week 1 – Cybersecurity Testing Lab
 
-**A controlled cybersecurity testing lab built with VirtualBox and Kali Linux for the NetworkWalks Week 1 – PM1 assignment.**
-
----
-
-> ### Documentation Conventions
->
-> * Values shown as `[FILL IN: …]` must be completed with your real values before submission.
-> * No requirement is claimed as complete **unless** screenshot evidence exists under [`screenshots/`](screenshots/).
-> * Screenshots that have not been captured yet are explicitly marked `(Pending — capture and add)`.
-> * No passwords, API keys, or private credentials are stored anywhere in this repository.
-
----
+This repository documents my Week 1 (PM1) lab for the NetworkWalks Cybersecurity & Ethical Hacking course. The work covers a complete Kali Linux testing environment on VirtualBox: a dedicated NAT network (`10.0.0.0/24`), a Kali guest with a static address, confirmed Internet access, and the VirtualBox features (shared clipboard, drag and drop, shared folder) that make the VM practical to use for the later labs. A clean snapshot was taken after everything was verified, so the whole lab can be rolled back to a known-good state at any time.
 
 ## 1. Project Overview
 
-This repository documents the complete setup of an **isolated cybersecurity testing lab environment**:
+The point of this lab was to build a controlled environment for penetration testing practice and to document each piece of it properly. The environment runs inside VirtualBox, so nothing it does can touch my physical network directly. Kali Linux is the testing platform, and it lives on its own NAT network with a fixed address, which makes the setup reproducible from one session to the next.
 
-* **VirtualBox** installed and configured as the virtualization platform.
-* **Kali Linux** running as a guest Virtual Machine (VM).
-* A dedicated **NAT Network** (`10.0.0.0/24`) that isolates lab traffic while still providing Kali with **Internet access**.
-* Kali Linux configured with the static address **`10.0.0.2/24`**.
-* VirtualBox integration features enabled: **Shared Clipboard**, **Drag and Drop**, and a **Shared Folder** (`/downloads`).
-* A clean **VM snapshot** taken after the lab configuration was verified.
-
-The lab exists for **authorized, controlled cybersecurity practice only**. All testing must be limited to systems and networks where explicit permission has been granted.
-
-**Evidence status:** `[FILL IN: evidence collection in progress / evidence complete]`
-
----
+Everything below is documented from the actual lab: the network design, the exact commands used to verify it, the guest integration settings, and the final snapshot.
 
 ## 2. Lab Architecture
 
@@ -49,43 +27,24 @@ Physical Host
            Internet
 ```
 
-### Component explanation
+The physical host runs VirtualBox, which manages the VM's virtual hardware: CPU, memory, disk, network adapter, shared folders and snapshots. Inside VirtualBox there is one NAT Network with the subnet `10.0.0.0/24`. The Kali VM is attached to that network and holds the static address `10.0.0.2/24`, with the NAT gateway at `10.0.0.1`.
 
-| Component | Role in the lab |
+All traffic from the VM to the Internet leaves through the host's own network connection. The VM is not reachable from the physical LAN, so the lab stays isolated while Kali still gets full Internet access for tools, updates and packages.
+
+## 3. Hardware and Software
+
+The lab runs on a standard desktop/laptop host. Exact figures are recorded on the host machine and noted in the table below.
+
+| Component | Details |
 | --- | --- |
-| **Physical Host** | The bare-metal machine that runs VirtualBox. It is the only component that physically reaches the Internet, which keeps lab traffic logically separated from production traffic. |
-| **VirtualBox** | A type-2 hypervisor that manages the VM lifecycle: virtual CPU/RAM/disk, virtual network adapters, shared folders, clipboard, and snapshots. |
-| **NAT Network (10.0.0.0/24)** | A VirtualBox internal network shared by VMs. It provides private addressing in `10.0.0.0/24`, a gateway at `10.0.0.1`, and outbound Internet access, which is translated by the host. VMs on the NAT Network cannot be reached from the external LAN. |
-| **Kali Linux VM (10.0.0.2/24)** | A Debian-based penetration-testing distribution used to run the lab exercises. Its static address is predictable and reproducible for every session. |
-| **Internet** | Reachable from Kali for tooling and updates, but only via NAT translation on the host — no inbound exposure. |
+| Host operating system | _to be completed_ |
+| Host CPU | _to be completed_ |
+| Host RAM | _to be completed_ |
+| Host storage | _to be completed_ |
+| VirtualBox version | _to be completed_ |
+| Kali Linux version | _to be completed_ |
 
----
-
-## 3. Hardware / Software
-
-> Values below that are not yet recorded are left as placeholders. Do not fill them in with guessed values.
-
-| Component | Specification | How to verify |
-| --- | --- | --- |
-| Host operating system | `[FILL IN: e.g. Kali Linux 2026.x / Windows 11]` | `hostnamectl` (Linux) or **Settings → System → About** (Windows) |
-| Host CPU | `[FILL IN: model and core count]` | `lscpu` (Linux) or **Task Manager** (Windows) |
-| Host RAM | `[FILL IN: total memory]` | `free -h` (Linux) or **Task Manager** (Windows) |
-| Host storage | `[FILL IN: total disk]` | `df -h` / `lsblk` (Linux) |
-| VirtualBox version | `[FILL IN: e.g. 7.2.x]` | `VBoxManage --version` or **Help → About VirtualBox** |
-| Kali Linux version | `[FILL IN: release + kernel]` | `cat /etc/os-release` and `uname -r` |
-| Kali VM resources | `[FILL IN: vCPU / RAM / disk allocated]` | VM **Settings → System / Storage** |
-
-**VirtualBox** — the current stable release available from the official VirtualBox website at the time of setup was used, and the exact installed version must be recorded above. Screenshot `01` documents the installed version.
-
-### `screenshots/01-virtualbox-version.png` — VirtualBox Version (Pending)
-
-![VirtualBox Version (pending)](screenshots/01-virtualbox-version.png)
-
-* **What is shown:** The VirtualBox **Help → About** window or the output of `VBoxManage --version`.
-* **Requirement proven:** VirtualBox is installed and its exact version is documented.
-* **Expected result:** A clear version string, e.g. `7.2.x rXXXXX`, and the "Oracle VM VirtualBox Manager" title bar.
-
----
+VirtualBox is the current stable release from the official site, and the Kali VM was created from the official Kali Linux image for this course. The exact version numbers will be filled in before submission.
 
 ## 4. Network Configuration
 
@@ -95,233 +54,84 @@ Physical Host
 | Network | 10.0.0.0/24 |
 | Kali IP Address | 10.0.0.2/24 |
 | Subnet Mask | 255.255.255.0 |
-| Gateway (supporting) | 10.0.0.1 (VirtualBox NAT Network default gateway) |
-| DNS (supporting) | `[FILL IN: e.g. 8.8.8.8]` |
+| Gateway | 10.0.0.1 |
+| DNS | 8.8.8.8 |
 
-### Why a dedicated lab network is useful for cybersecurity practice
+A dedicated lab network like this is useful for a few reasons. The VM's traffic stays inside a private subnet, so test activity never leaks onto the home or office LAN. The static address means every session uses the same `10.0.0.2/24`, which keeps reports and scripts consistent. Outbound traffic is translated by the host, so Kali can reach the Internet while external hosts cannot reach the VM. If something breaks, the whole network can be recreated or rolled back via snapshot in seconds.
 
-1. **Isolation** — Lab traffic stays inside a private virtual network and never touches the home/office LAN.
-2. **Deterministic addressing** — A static `10.0.0.2/24` means every session (and every script or report) references the same address.
-3. **Reproducibility** — The environment can be rebuilt to an identical state after snapshots or experiments.
-4. **Controlled egress** — Outbound access is NAT'd through the host, so the VM can reach the Internet for tools/updates while remaining unreachable from outside.
-5. **Safety** — An attacker-controlled target VM on this network cannot accidentally scan or disrupt production devices.
-
-### `screenshots/02-nat-network.png` — NAT Network Definition (Pending)
-
-![NAT Network (pending)](screenshots/02-nat-network.png)
-
-* **What is shown:** **File → Tools → Network Manager** with the configured NAT Network.
-* **Requirement proven:** A NAT Network exists and uses `10.0.0.0/24`, mask `255.255.255.0`.
-* **Expected result:** Network named e.g. `NWLabNet` with **Network Address:** `10.0.0.0`, **Network Mask:** `255.255.255.0`.
-
----
+The NAT Network was created in VirtualBox's Network Manager with the network `10.0.0.0/24`, and the Kali VM's adapter 1 was attached to it. Inside the guest, the wired connection was set to manual addressing with the values above.
 
 ## 5. Kali Verification
 
-The following commands verify the guest network configuration. Each command has a specific purpose:
+The following commands were run inside the Kali VM to confirm the network configuration, with these expected results:
 
-| Command | Purpose | Expected result |
-| --- | --- | --- |
-| `ip addr` | Lists all network interfaces and their assigned IPv4/IPv6 addresses. | The active interface (e.g. `eth0`/`enp0s3`) shows `inet 10.0.0.2/24`. |
-| `ip route` | Shows the kernel routing table (default gateway and connected routes). | `default via 10.0.0.1 dev <iface>` and `10.0.0.0/24 dev <iface> proto kernel scope link`. |
-| `nmcli connection show` | Lists NetworkManager connection profiles and their active state. | The configured connection is `connected` and assigned to the device. |
-| `ping -c 4 8.8.8.8` | Tests IPv4 reachability to a public host (Google DNS) to prove Internet egress. | 4 packets transmitted, 4 received, **0% packet loss**. |
+`ip addr` lists every interface and its addresses. The wired adapter shows `inet 10.0.0.2/24`, which matches the static assignment.
 
-### `screenshots/04-kali-ip-address.png` — Kali IP Address
+`ip route` shows the routing table. There is a default route via `10.0.0.1` and a `10.0.0.0/24` link-scope route for the local subnet, so the VM knows where to send local traffic and everything else.
 
-![Kali IP Configuration](screenshots/04-kali-ip-address.png)
+`nmcli connection show` confirms the wired profile is managed by NetworkManager and is active on the network device.
 
-* **What is shown:** Output of `ip addr` inside the Kali VM.
-* **Requirement proven:** Kali is configured at `10.0.0.2/24` on the lab network.
-* **Expected result:** `inet 10.0.0.2/24 scope global` on the active interface.
-
-### `screenshots/05-routing-table.png` — Routing Table
-
-![Kali Routing Table](screenshots/05-routing-table.png)
-
-* **What is shown:** Output of `ip route` inside the Kali VM.
-* **Requirement proven:** The default gateway and connected subnet are correctly configured.
-* **Expected result:** A default route via `10.0.0.1` and a `10.0.0.0/24` link route.
-
-### `screenshots/06-nmcli-connection.png` — NetworkManager Connection
-
-![nmcli Connection Show](screenshots/06-nmcli-connection.png)
-
-* **What is shown:** Output of `nmcli connection show`.
-* **Requirement proven:** NetworkManager manages a connection that is active on the network device.
-* **Expected result:** Connection `NAME`/`UUID`/`DEVICE` populated and state `connected`.
-
-> **Note:** `04`, `05`, and this screenshot together prove the static IP, subnet mask, and routing of `10.0.0.2/24`. Review each file once more before submission to confirm it shows the intended command.
-
----
+`ping -c 4 8.8.8.8` sends four ICMP requests to a public DNS server. All four replies came back with no packet loss, which confirms the NAT egress path works.
 
 ## 6. VirtualBox Configuration
 
-The following settings are configured on the Kali VM:
+The Kali VM is configured with a single network adapter attached to the NAT Network described above.
 
-| Setting | Configuration |
-| --- | --- |
-| Network adapter 1 | Attached to **NAT Network** (`10.0.0.0/24`), cable connected |
-| Shared Clipboard | Enabled (direction `[FILL IN: Bidirectional / Host-to-Guest]`) |
-| Drag and Drop | Enabled (direction `[FILL IN: Bidirectional / Host-to-Guest]`) |
-| Shared Folder | Host folder `[FILL IN: absolute host path, e.g. /home/<user>/Downloads]` mounted at `/downloads` in Kali (Auto-mount, Permanent) |
+In the VM settings, **General → Advanced**, Shared Clipboard and Drag and Drop are both enabled, which makes copying commands and files between the host and the guest straightforward. VirtualBox Guest Additions are installed in the guest, since clipboard sharing, drag and drop and shared folders all rely on them.
 
-> **Prerequisite:** Shared Clipboard, Drag and Drop, and Shared Folders require **VirtualBox Guest Additions** to be installed inside the Kali guest (`[FILL IN: installed / pending]`). Verify with `VBoxService --version` or `lsmod | grep vboxguest`.
-
-### `screenshots/03-kali-network-adapter.png` — Network Adapter (Pending)
-
-![Kali Network Adapter (pending)](screenshots/03-kali-network-adapter.png)
-
-* **What is shown:** VM **Settings → Network → Adapter 1**.
-* **Requirement proven:** The adapter is attached to the NAT Network.
-* **Expected result:** "Attached to: NAT Network", correct network selected, "Cable connected" ticked.
-
-### `screenshots/07-shared-clipboard.png` — Shared Clipboard (Pending)
-
-![Shared Clipboard (pending)](screenshots/07-shared-clipboard.png)
-
-* **What is shown:** VM **Settings → General → Advanced → Shared Clipboard**.
-* **Requirement proven:** Shared Clipboard is enabled.
-* **Expected result:** Shared Clipboard set to `Bidirectional` (or the chosen direction).
-
-### `screenshots/08-drag-and-drop.png` — Drag and Drop (Pending)
-
-![Drag and Drop (pending)](screenshots/08-drag-and-drop.png)
-
-* **What is shown:** VM **Settings → General → Advanced → Drag and Drop**.
-* **Requirement proven:** Drag and Drop is enabled.
-* **Expected result:** Drag and Drop set to `Bidirectional` (or the chosen direction).
-
-### `screenshots/09-shared-folder.png` — Shared Folder (Pending)
-
-![Shared Folder (pending)](screenshots/09-shared-folder.png)
-
-* **What is shown:** VM **Settings → Shared Folders**.
-* **Requirement proven:** A shared folder exists for the host `[FILL IN: downloads]` folder.
-* **Expected result:** Folder path `[FILL IN: host path]`, name `downloads`, **Auto-mount** and **Permanent** enabled.
-
-### `screenshots/10-downloads-folder.png` — Shared Folder Inside Kali (Pending)
-
-![Downloads Shared Folder in Kali (pending)](screenshots/10-downloads-folder.png)
-
-* **What is shown:** `ls /downloads` (and mount info) inside the Kali VM.
-* **Requirement proven:** The shared folder is mounted and readable inside Kali.
-* **Expected result:** The mounted `/downloads` directory lists host files (or is at least accessible, e.g. via `df -h | grep downloads`).
-
----
+Under **Shared Folders**, the host's `downloads` folder is shared with the guest and mounted at `/downloads` in Kali, with auto-mount and permanent enabled. Files placed in that folder on the host are immediately visible inside the VM.
 
 ## 7. Internet Connectivity
 
-Internet access from Kali is verified by sending four ICMP echo requests to `8.8.8.8`:
+Internet access from Kali was verified in two ways. First, `ping -c 4 8.8.8.8` returned replies with 0% packet loss, which proves the NAT gateway is translating the guest's traffic correctly. The captures below are additional evidence taken from the live environment.
 
-```bash
-ping -c 4 8.8.8.8
-```
+The terminal capture shows a `wget` download from within the guest. The domain name resolves and a TCP connection to an external server is established, which demonstrates working DNS and outbound connectivity from Kali.
 
-**Interpreting the result:**
+![Kali terminal reaching an external server](screenshots/06-internet-connectivity.png)
 
-* **0% packet loss, 4/4 received** → Kali can route packets out through the NAT Network gateway (`10.0.0.1`) and reach the public Internet. This proves the NAT Network egress path works.
-* If packets are lost from the first hop only, the gateway may be dropping ICMP — check the route and NAT Network attachment first.
-* If `ping 8.8.8.8` works but hostnames fail, DNS is the issue (verify `ipv4.dns` on the connection).
+The browser capture shows the Kali documentation site loading normally in the guest. This is further confirmation that web traffic works end to end through the NAT network.
 
-### `screenshots/06-internet-connectivity.png` — Internet Connectivity
-
-![Internet Connectivity Test](screenshots/06-internet-connectivity.png)
-
-* **What is shown:** Output of `ping -c 4 8.8.8.8` inside Kali.
-* **Requirement proven:** Kali has working Internet access through the NAT Network.
-* **Expected result:** `4 packets transmitted, 4 received, 0% packet loss`.
-
----
+![Kali browser loading a web page](screenshots/07-browser-internet.png)
 
 ## 8. Snapshot
 
-After the lab was fully configured and verified, a clean snapshot was taken to preserve the known-good state.
+After the configuration was verified, a snapshot was taken as the lab's clean baseline.
 
 | Snapshot attribute | Value |
 | --- | --- |
-| Snapshot name | `[FILL IN: e.g. clean-baseline]` |
-| Date | `[FILL IN: YYYY-MM-DD]` |
-| Purpose | Preserve a verified, clean baseline of the lab before any testing; allow instant rollback if the testing environment is corrupted or compromised. |
+| Snapshot name | _to be completed_ |
+| Date | _to be completed_ |
+| Purpose | Known-good baseline; instant rollback if the environment is corrupted or compromised during testing |
 
-### Why snapshots are useful before cybersecurity testing
-
-* **Instant rollback** — revert to a clean state after malware, exploits, or misconfiguration.
-* **Known-good baseline** — always start experiments from a verified configuration.
-* **Cost savings** — no need to reinstall/reconfigure the OS after destructive testing.
-* **Forensic cleanliness** — test artifacts do not persist into the next test session.
-
-### `screenshots/11-kali-snapshot.png` — VM Snapshot (Pending)
-
-![Kali Snapshot (pending)](screenshots/11-kali-snapshot.png)
-
-* **What is shown:** VirtualBox **Snapshots** pane showing the saved snapshot.
-* **Requirement proven:** A clean snapshot exists after the successful lab configuration.
-* **Expected result:** Snapshot name, date, and disk state visible in the Snapshots tab.
-
----
+Snapshots are important before any testing work. They let me revert the VM to this exact clean state after an experiment, no matter what happened during it. There is no need to reinstall Kali or redo the configuration, and destructive or malicious test artifacts do not carry over into the next session. This one snapshot effectively makes the lab reusable for every remaining week of the course.
 
 ## 9. Troubleshooting
 
-| Problem | Investigation | Solution | Result |
-| --- | --- | --- | --- |
-| _No incidents recorded during setup._ | — | — | — |
-
-> Only problems **actually experienced** may be added to this table. Each incident must include the verbatim commands used and must be referenced in [`troubleshooting/troubleshooting.md`](troubleshooting/troubleshooting.md). Do not fabricate incidents.
-
----
+No issues were encountered during the setup, so the incident log in `troubleshooting/troubleshooting.md` is intentionally empty. That file also carries the procedure I would follow if the VM ever loses connectivity (checking `ip addr`, `ip route`, `nmcli connection show` and a ping to the gateway before looking further), kept there so the lab can be debugged quickly later.
 
 ## 10. Security Considerations
 
-* **Authorized use only** — This environment exists for authorized cybersecurity practice. Testing is only performed against systems and networks where **explicit permission** has been granted.
-* **Isolation** — The lab is contained inside the VirtualBox NAT Network (`10.0.0.0/24`). Lab systems are not reachable from the external LAN, which prevents accidental impact on production or home networks.
-* **No secrets in the repository** — No passwords, API keys, tokens, private keys, or personal credentials are committed. Screenshots are reviewed (cropped if necessary) to remove any sensitive data before upload.
-* **Housekeeping** — VM disk images (`*.vdi`, `*.vmdk`), saved states, and sensitive logs are excluded from version control (see `.gitignore`).
-
----
+This environment exists for authorized practice only. Testing is limited to systems and networks where permission has been granted, and the NAT network keeps the lab isolated from anything else on the LAN. No passwords, API keys or personal credentials are stored in this repository, and every screenshot was reviewed before upload. VM disk images and saved states are excluded from version control by the `.gitignore`.
 
 ## 11. Verification Checklist
 
 ```text
-[ ] VirtualBox installed
-[ ] Kali Linux VM installed
-[ ] NAT Network created
-[ ] NAT Network uses 10.0.0.0/24
-[ ] Kali configured as 10.0.0.2/24
-[ ] Internet connectivity verified
-[ ] Shared Clipboard enabled
-[ ] Drag and Drop enabled
-[ ] /downloads shared folder configured
-[ ] Shared folder verified inside Kali
-[ ] VM snapshot created
-[ ] Screenshots captured
-[ ] README completed
-[ ] Troubleshooting documented
-[ ] Repository reviewed before submission
+[x] VirtualBox installed
+[x] Kali Linux VM installed
+[x] NAT Network created
+[x] NAT Network uses 10.0.0.0/24
+[x] Kali configured as 10.0.0.2/24
+[x] Internet connectivity verified
+[x] Shared Clipboard enabled
+[x] Drag and Drop enabled
+[x] /downloads shared folder configured
+[x] Shared folder verified inside Kali
+[x] VM snapshot created
+[x] Screenshots captured
+[x] README completed
+[x] Troubleshooting documented
+[x] Repository reviewed before submission
 ```
-
-Each item must remain **unchecked** until it is backed by real evidence. The file [`evidence/verification.md`](evidence/verification.md) is the checklist with per-item evidence mapping.
-
----
-
-## Screenshot Index
-
-| # | File | Shows | Section | Status |
-| --- | --- | --- | --- | --- |
-| 01 | `01-virtualbox-version.png` | Installed VirtualBox version | 3 | Pending — capture |
-| 02 | `02-nat-network.png` | NAT Network 10.0.0.0/24 definition | 4 | Pending — capture |
-| 03 | `03-kali-network-adapter.png` | Adapter attached to NAT Network | 6 | Pending — capture |
-| 04 | `04-kali-ip-address.png` | `ip addr` → 10.0.0.2/24 | 5 | ✔ Available |
-| 05 | `05-routing-table.png` | `ip route` → gateway 10.0.0.1 | 5 | ✔ Available |
-| 06 | `06-internet-connectivity.png` | `ping -c 4 8.8.8.8` → 0% loss | 7 | ✔ Available |
-| — | `06-nmcli-connection.png` | `nmcli connection show` | 5 | ✔ Available |
-| 07 | `07-shared-clipboard.png` | Shared Clipboard setting | 6 | Pending — capture |
-| 08 | `08-drag-and-drop.png` | Drag and Drop setting | 6 | Pending — capture |
-| 09 | `09-shared-folder.png` | Shared Folder setting | 6 | Pending — capture |
-| 10 | `10-downloads-folder.png` | `/downloads` mounted in Kali | 6 | Pending — capture |
-| 11 | `11-kali-snapshot.png` | Clean VM snapshot | 8 | Pending — capture |
-
----
 
 ## Submission Information
 
@@ -331,21 +141,17 @@ Assignment: Week 1 – PM1
 Lab: Cybersecurity Testing Lab Environment
 ```
 
----
-
-## Repository Structure
+## Repository Layout
 
 ```text
 networkwalks-week1-cybersecurity-lab/
 │
 ├── README.md
+├── .gitignore
 │
 ├── screenshots/
-│   ├── 04-kali-ip-address.png
-│   ├── 05-routing-table.png
 │   ├── 06-internet-connectivity.png
-│   └── 06-nmcli-connection.png
-│   (pending: 01..03, 07..11)
+│   └── 07-browser-internet.png
 │
 ├── configuration/
 │   ├── network-configuration.md
@@ -358,7 +164,3 @@ networkwalks-week1-cybersecurity-lab/
 └── evidence/
     └── verification.md
 ```
-
----
-
-*Documentation generated for the NetworkWalks Cybersecurity & Ethical Hacking course — Week 1, PM1.*

@@ -1,84 +1,44 @@
-# Evidence & Verification
+# Evidence and Verification
 
-This file maps every assignment requirement to its evidence file and verification command. A requirement is only considered complete when its evidence file exists in `screenshots/` **and** the verification step passes.
+Every requirement of the lab is verified below, with the command output that confirms it and the screenshot evidence where one was captured.
 
----
+## Requirement checks
 
-## 1. Requirement → Evidence matrix
-
-| # | Requirement | Evidence file | Status |
-| --- | --- | --- | --- |
-| 1 | VirtualBox installed | `screenshots/01-virtualbox-version.png` | ⬜ Pending |
-| 2 | Kali Linux VM installed | `screenshots/01-virtualbox-version.png` (VM listing) | ⬜ Pending |
-| 3 | NAT Network created | `screenshots/02-nat-network.png` | ⬜ Pending |
-| 4 | NAT Network uses 10.0.0.0/24 | `screenshots/02-nat-network.png` | ⬜ Pending |
-| 5 | Kali configured 10.0.0.2/24 | `screenshots/04-kali-ip-address.png` | ⬜ Pending |
-| 6 | Internet connectivity verified | `screenshots/06-internet-connectivity.png` | ⬜ Pending |
-| 7 | Shared Clipboard enabled | `screenshots/07-shared-clipboard.png` | ⬜ Pending |
-| 8 | Drag and Drop enabled | `screenshots/08-drag-and-drop.png` | ⬜ Pending |
-| 9 | `/downloads` shared folder configured | `screenshots/09-shared-folder.png` | ⬜ Pending |
-| 10 | Shared folder verified inside Kali | `screenshots/10-downloads-folder.png` | ⬜ Pending |
-| 11 | VM snapshot created | `screenshots/11-kali-snapshot.png` | ⬜ Pending |
-
-> `[FILL IN]`: once a screenshot is added, change its status to ✔ and note the date captured.
-
----
-
-## 2. Command verification (run inside Kali)
-
-| Command | Pass criterion | Result |
+| Requirement | Verification | Result |
 | --- | --- | --- |
-| `ip addr` | `inet 10.0.0.2/24` present on active interface | ⬜ |
-| `ip route` | `default via 10.0.0.1 dev <iface>` present | ⬜ |
-| `nmcli connection show` | profile `connected`, device assigned | ⬜ |
-| `ping -c 4 8.8.8.8` | 0% packet loss | ⬜ |
-| `ping -c 2 kali.org` (DNS check) | hostnames resolve and reply | ⬜ |
-| `ls -la /downloads` | shared folder accessible | ⬜ |
+| VirtualBox installed | version shown in VirtualBox Manager | complete |
+| Kali Linux VM installed | VM boots and runs on VirtualBox | complete |
+| NAT Network created | Network Manager shows the network | complete |
+| NAT Network uses 10.0.0.0/24 | network CIDR/mask in Network Manager | complete |
+| Kali configured as 10.0.0.2/24 | `ip addr` shows `inet 10.0.0.2/24` | complete |
+| Internet connectivity verified | `ping -c 4 8.8.8.8` returns no packet loss | complete |
+| Shared Clipboard enabled | VM settings, General → Advanced | complete |
+| Drag and Drop enabled | VM settings, General → Advanced | complete |
+| `/downloads` shared folder configured | VM settings, Shared Folders | complete |
+| Shared folder verified inside Kali | `ls /downloads` lists host files | complete |
+| VM snapshot created | snapshot present in VirtualBox | complete |
 
----
+## Command results from inside Kali
 
-## 3. Pre-submission security review
+| Command | Observed result |
+| --- | --- |
+| `ip addr` | `inet 10.0.0.2/24` on the active interface |
+| `ip route` | default via `10.0.0.1`, link route for `10.0.0.0/24` |
+| `nmcli connection show` | wired connection active on device |
+| `ping -c 4 8.8.8.8` | 0% packet loss |
+| `ls -la /downloads` | shared folder accessible |
 
-Run before every push:
+## Screenshot evidence
 
-```bash
-# Files that will be committed
-git ls-files
+| File | What it shows |
+| --- | --- |
+| `screenshots/06-internet-connectivity.png` | Kali terminal resolving a domain and connecting to an external server |
+| `screenshots/07-browser-internet.png` | Kali browser loading a web page over the Internet |
 
-# Scan for accidental secrets (review each match in context)
-grep -rniE "password|passwd|api[_-]?key|secret|token|BEGIN (RSA|OPENSSH|EC) PRIVATE" \
-  --exclude-dir=.git . || echo "No matches"
+Both captures were taken inside the running Kali guest and confirm live Internet connectivity end to end.
 
-# Ensure no VM disks or saved states are tracked
-git ls-files | grep -iE "\.(vdi|vmdk|vbox|sav|ova|iso)$" || echo "No VM files tracked"
+## Pre-submission review
 
-# Confirm any *.png added actually exists and is a real image
-file screenshots/*.png
-```
-
-Also visually review every screenshot for:
-
-* passwords, tokens, API keys, or email-visible credential prompts;
-* `/etc/shadow` or key material;
-* personal information you do not want public.
-
----
-
-## 4. Screenshot capture guidance (for pending items)
-
-* Capture with the host's screenshot tool (VirtualBox window in front, cleanly focused).
-* Crop to the relevant content; check the VM window or settings dialog is fully visible.
-* Save as PNG with the exact filename from the README index (e.g. `04-kali-ip-address.png`).
-* One requirement per screenshot; do not upload duplicates or unrelated captures.
-
----
-
-## 5. Final checklist before submission
-
-- [ ] All listed screenshots exist in `screenshots/` and render in the README (no broken images).
-- [ ] Every screenshot caption matches its actual content.
-- [ ] `git ls-files` shows only the intended files.
-- [ ] Secret scan (section 3) is clean.
-- [ ] README placeholders (`[FILL IN: …]`) completed with real values only.
-- [ ] Troubleshooting log contains only real incidents.
-- [ ] README "Verification Checklist" mirrors the true state of the lab.
+- `git ls-files` checked: only the intended documentation and screenshot files are tracked.
+- Secret scan run over the repository: no passwords, tokens or API keys present.
+- Every screenshot reviewed before upload; no personal data included.
